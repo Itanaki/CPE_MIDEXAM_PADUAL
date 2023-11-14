@@ -1,0 +1,29 @@
+---
+- name: Installing dependencies
+  package:
+    name:
+      - httpd
+      - php
+      - mariadb
+      - mariadb-server
+      - php-mysql
+    state: latest
+
+- name: Turning on Ports needed for lampS
+  shell: |
+    sudo firewall-cmd --permanent --zone=public --add-service=http
+    sudo firewall-cmd --permanent --zone=public --add-service=https
+    sudo firewall-cmd --reload
+
+- name: Starting Apache service
+  service:
+    name: httpd
+    state: started
+    enabled: true
+
+- name: Starting Mariadb services
+  service:
+    name: mariadb
+    state: started
+    enabled: true
+

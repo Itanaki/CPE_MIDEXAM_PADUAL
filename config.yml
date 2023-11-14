@@ -1,0 +1,71 @@
+---
+
+- hosts: all
+  become: true 
+  pre_tasks:
+
+    - name: Update and upgrade remote CentOS server
+      yum:
+        update_cache: yes
+        name:  "*"
+        state: latest
+      when: ansible_distribution == "CentOS"
+
+    - name: epel-release update or download
+      package:
+        name:
+          - epel-release
+      when: ansible_distribution == "CentOS"
+
+    - name: install updates (Ubuntu)
+      tags: always
+      apt:
+        update_cache: yes
+        state: latest
+      when: ansible_distribution == "Ubuntu"
+
+
+- hosts: CentOS
+  tags: elk_Ct
+  become: true
+  roles:
+    - elk_Ct
+
+- hosts: Ubuntu
+  become: true
+  tags: elk_Ub
+  roles:
+    - elk_Ub
+
+
+- hosts: Ubuntu
+  become: true
+  tags: gpi_Ub
+  roles:
+    - gpi_Ub
+
+- hosts: CentOS
+  become: true
+  tags: gpi_Ct
+  roles:
+    - role: gpi_Ct
+      source: https://github.com/prometheus/prometheus/releases/download/v2.43.0/prometheus-2.43.0.linux-amd64.tar.gz
+
+
+- hosts: CentOS
+  tags: lampS_Ct
+  become: true
+  roles: 
+    - lampS_Ct
+
+- hosts: Ubuntu
+  tags: lampS_Ub
+  become: true
+  roles: 
+    - lampS_Ub
+
+- hosts: Ubuntu
+  tags: nagios_Ub
+  become: true
+  roles: 
+    - nagios_Ub
